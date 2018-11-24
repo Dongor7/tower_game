@@ -1,62 +1,36 @@
 import './style.sass';
+import Game from './Game';
 import Tower from './models/Tower';
 
-class Game {
+const canvas = document.getElementById('canvas');
 
-    constructor (canvas, width, height) {
+const GAME = new Game(canvas, 600, 400);
 
-        canvas.width = width;
-        canvas.height = height;
-        this.width = width;
-        this.height = height;
-        this.ctx = canvas.getContext('2d');
-        this.angle = 0;
-        this.tower = new Tower(
-            {
-                'posX': 30,
-                'posY': 30
-            },
-            {
-                'height': 50,
-                'width': 50
-            },
-            2
-        );
+canvas.addEventListener('mousemove', (evt) => {
 
-    }
+    GAME.mousePos.posX = evt.pageX - canvas.offsetLeft;
+    GAME.mousePos.posY = evt.pageY - canvas.offsetTop;
 
-    play () {
+});
 
-        this.clear();
-        this.drawBorder();
+const first = new Tower({
+    'posX': 250,
+    'posY': 150,
+    'size': 50,
+    'stroke': 2
+});
 
-        this.tower.draw(this.ctx);
+first.setUpdateFunction(function updateFunc () {
 
-        this.angle = (this.angle + 1) % 360;
+    this.angle = Math.atan2(
+        GAME.mousePos.posY - this.center.posY,
+        GAME.mousePos.posX - this.center.posX
+    );
 
-        this.tower.setAngle(this.angle);
+});
 
-        requestAnimationFrame(this.play.bind(this));
-
-    }
-
-
-    drawBorder () {
-
-        this.ctx.beginPath();
-        this.ctx.rect(0, 0, this.width, this.height);
-        this.ctx.stroke();
-
-    }
-
-    clear () {
-
-        this.ctx.clearRect(0, 0, this.width, this.height);
-
-    }
-
-}
-
-const GAME = new Game(document.getElementById('canvas'), 600, 400);
+GAME.addObject(first);
 
 GAME.play();
+
+
