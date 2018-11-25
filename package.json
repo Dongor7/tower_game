@@ -27,6 +27,7 @@
     "webpack-dev-server": "3.1.10"
   },
   "dependencies": {
+    "@babel/plugin-proposal-pipeline-operator": "^7.0.0",
     "lodash": "4.17.11"
   }
 }

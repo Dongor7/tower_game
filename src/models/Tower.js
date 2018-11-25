@@ -1,3 +1,5 @@
+import Enemy from './Enemy';
+
 export default class Tower {
 
     constructor ({posX, posY, size, stroke}) {
@@ -14,7 +16,7 @@ export default class Tower {
         this.ctx = null;
         this.TO_RADIANS = Math.PI / 180;
         this.angle = 0;
-        this.updateFuncs = [];
+        this.range = 150;
 
     }
 
@@ -78,9 +80,43 @@ export default class Tower {
 
     }
 
-    setUpdateFunction (func) {
+    update (GAME) {
 
-        this.updateFuncs.push(func);
+        this.getAngle(this.getNearestEnemy(GAME));
+
+    }
+
+    getNearestEnemy (GAME) {
+
+        const enemies = GAME.objects.filter((obj) => obj instanceof Enemy);
+        let nearestEnemy = null;
+        let nearestDistance = null;
+
+        enemies.forEach((enemy) => {
+
+            const distance = Math.sqrt(Math.pow(enemy.posX - this.posX, 2) +
+                Math.pow(enemy.posY - this.posY, 2));
+
+            if (distance <= this.range &&
+                (nearestDistance > distance || !nearestDistance)) {
+
+                nearestDistance = distance;
+                nearestEnemy = enemy;
+
+            }
+
+        });
+
+        return nearestEnemy || 0;
+
+    }
+
+    getAngle (enemy) {
+
+        this.angle = Math.atan2(
+            enemy.posY - this.center.posY,
+            enemy.posX - this.center.posX
+        );
 
     }
 

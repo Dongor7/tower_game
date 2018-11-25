@@ -37,11 +37,11 @@ export default class Game {
 
         this.objects.forEach((object) => {
 
-            object.updateFuncs.forEach((func) => {
+            if (object.update) {
 
-                Reflect.apply(func, object, []);
+                object.update(this);
 
-            });
+            }
 
         });
 

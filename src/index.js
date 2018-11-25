@@ -1,6 +1,7 @@
 import './style.sass';
 import Game from './Game';
 import Tower from './models/Tower';
+import Enemy from './models/Enemy';
 
 const canvas = document.getElementById('canvas');
 
@@ -13,23 +14,36 @@ canvas.addEventListener('mousemove', (evt) => {
 
 });
 
-const first = new Tower({
-    'posX': 250,
-    'posY': 150,
+const tower = new Tower({
+    'posX': 450,
+    'posY': 250,
     'size': 50,
     'stroke': 2
 });
 
-first.setUpdateFunction(function updateFunc () {
-
-    this.angle = Math.atan2(
-        GAME.mousePos.posY - this.center.posY,
-        GAME.mousePos.posX - this.center.posX
-    );
-
+const tower2 = new Tower({
+    'posX': 250,
+    'posY': 20,
+    'size': 50,
+    'stroke': 2
 });
 
-GAME.addObject(first);
+const enemy = new Enemy({
+    'posX': 150,
+    'posY': 50,
+    'radius': 15
+});
+
+const enemy2 = new Enemy({
+    'posX': 150,
+    'posY': 150,
+    'radius': 15
+});
+
+GAME.addObject(tower);
+GAME.addObject(tower2);
+GAME.addObject(enemy);
+GAME.addObject(enemy2);
 
 GAME.play();
 
