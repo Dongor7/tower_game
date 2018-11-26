@@ -1,11 +1,14 @@
 import Enemy from './Enemy';
+import Bullet from './Bullet';
 
 export default class Tower {
 
     constructor ({posX, posY, size, stroke}) {
 
-        this.posX = posX;
-        this.posY = posY;
+        this.pos = {
+            posX,
+            posY
+        };
         this.size = size;
         this.center = {
             'posX': posX + size / 2,
@@ -17,6 +20,7 @@ export default class Tower {
         this.TO_RADIANS = Math.PI / 180;
         this.angle = 0;
         this.range = 150;
+        this.isAttack = false;
 
     }
 
@@ -33,7 +37,7 @@ export default class Tower {
 
         this.ctx.beginPath();
         this.ctx.lineWidth = this.stroke;
-        this.ctx.strokeRect(this.posX, this.posY, this.size, this.size);
+        this.ctx.strokeRect(this.pos.posX, this.pos.posY, this.size, this.size);
         this.ctx.closePath();
 
     }
@@ -82,7 +86,49 @@ export default class Tower {
 
     update (GAME) {
 
-        this.getAngle(this.getNearestEnemy(GAME));
+        const enemy = this.getNearestEnemy(GAME);
+        let shootTimer = null;
+        let bullet = null;
+        const self = this;
+
+        if (enemy) {
+
+            if (!this.isAttack) {
+
+                this.isAttack = true;
+                shootTimer = setTimeout(function callback () {
+
+                    Tower.shoot();
+                    bullet = new Bullet({
+                        'posX': self.pos.posX,
+                        'posY': self.pos.posY,
+                        'size': 10,
+                        'speed': 1,
+                        'angle': self.angle
+                    });
+
+                    shootTimer = setTimeout(callback, 1000);
+
+                }, 1000);
+
+            }
+
+            this.getAngle(this.getNearestEnemy(GAME));
+
+        } else {
+
+            this.bulletUpdate(shootTimer);
+
+        }
+
+        bullet && bullet.update();
+
+    }
+
+    bulletUpdate (shootTimer) {
+
+        this.isAttack = false;
+        clearTimeout(shootTimer);
 
     }
 
@@ -94,8 +140,8 @@ export default class Tower {
 
         enemies.forEach((enemy) => {
 
-            const distance = Math.sqrt(Math.pow(enemy.posX - this.posX, 2) +
-                Math.pow(enemy.posY - this.posY, 2));
+            const distance = Math.sqrt(Math.pow(enemy.posX - this.pos.posX, 2) +
+                Math.pow(enemy.posY - this.pos.posY, 2));
 
             if (distance <= this.range &&
                 (nearestDistance > distance || !nearestDistance)) {
@@ -107,7 +153,7 @@ export default class Tower {
 
         });
 
-        return nearestEnemy || 0;
+        return nearestEnemy;
 
     }
 
@@ -117,6 +163,12 @@ export default class Tower {
             enemy.posY - this.center.posY,
             enemy.posX - this.center.posX
         );
+
+    }
+
+    static shoot () {
+
+        console.log('SHOOT!');
 
     }
 
